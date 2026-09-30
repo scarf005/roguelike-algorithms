@@ -1,0 +1,193 @@
+.view-navigation {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.view-navigation [aria-current="page"] {
+  border-color: var(--accent);
+}
+
+body.brogue-page {
+  color-scheme: dark;
+  --bg: #080808;
+  --fg: #d6d0c4;
+  --muted: #aaa297;
+  --panel: #151412;
+  --line: #494339;
+  --accent: #d9b85c;
+}
+
+.brogue-tool {
+  min-width: 0;
+}
+
+.brogue-tool button,
+.brogue-tool input,
+.brogue-tool select,
+.brogue-map canvas,
+body.brogue-page .view-navigation button {
+  border-radius: 0;
+}
+
+.brogue-tool h1 {
+  font-size: clamp(1rem, 3.4vw, 1.4rem);
+}
+
+.brogue-inputs,
+.brogue-playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 14px;
+  margin-bottom: 12px;
+}
+
+.brogue-tool label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.brogue-tool input[type="text"],
+.brogue-tool input[type="number"] {
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--fg);
+  font: inherit;
+  max-width: 100%;
+}
+
+.brogue-seed {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.brogue-seed input {
+  width: 100%;
+}
+
+.brogue-depth input {
+  width: 5em;
+}
+
+.brogue-map {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.brogue-map canvas {
+  width: 100%;
+  min-width: 790px;
+  display: block;
+  height: auto;
+  aspect-ratio: 790 / 464;
+  image-rendering: auto;
+  background: #080808;
+}
+
+.brogue-tool button:disabled,
+.brogue-tool input:disabled,
+.brogue-tool select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.brogue-scrub {
+  flex: 1 1 200px;
+  max-width: 400px;
+}
+
+.brogue-scrub input[type="range"] {
+  width: 100%;
+}
+
+.brogue-phase-select {
+  flex: 1 1 180px;
+  max-width: 320px;
+}
+
+.brogue-phase-select select {
+  width: 100%;
+  min-width: 0;
+}
+
+.brogue-info {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.brogue-explanation p,
+.brogue-legend p {
+  margin: 4px 0 8px;
+}
+
+.brogue-diagnostic {
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.brogue-error {
+  color: #ed9c8d;
+  overflow-wrap: anywhere;
+}
+
+.brogue-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.brogue-legend li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 3px 0;
+}
+
+.brogue-swatch {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+}
+
+.brogue-status,
+.brogue-shortcuts,
+.brogue-footer {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.brogue-status {
+  font-variant-numeric: tabular-nums;
+}
+
+.brogue-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 12px;
+}
+
+.brogue-tool a {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .brogue-info {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .brogue-playback {
+    gap: 8px;
+  }
+}

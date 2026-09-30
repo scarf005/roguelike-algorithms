@@ -1,5 +1,5 @@
 import { render } from "solid-js/web"
-import { App } from "./app.tsx"
+import { Root } from "./root.tsx"
 import "./styles.css"
 
-render(() => <App />, document.getElementById("app") as HTMLElement)
+render(() => <Root />, document.getElementById("app") as HTMLElement)
