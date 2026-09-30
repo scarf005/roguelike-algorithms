@@ -1,0 +1,8 @@
+#!/bin/bash
+# Source provenance: Brogue CE v1.15.1, commit 1ba4240b7a928ddf0ffb772717bf1d433cd63804; upstream path tools/bullet-points; vendored and modified for this integration.
+
+
+for file in "$@"; do
+    cat $file
+    echo
+done

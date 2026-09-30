@@ -1,0 +1,1 @@
+Brogue CE v1.15.1 source, upstream repository paths preserved, commit 1ba4240b7a928ddf0ffb772717bf1d433cd63804. Copied from /tmp/pi/brogue-phase1/BrogueCE for the Phase 2 native/WASM integration. Original copyright and AGPL-3.0-or-later notices are preserved. Integration modifications are maintained outside this pristine source tree.

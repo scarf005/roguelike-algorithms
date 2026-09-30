@@ -1,2 +1,7 @@
 node_modules
 dist
+.playwright-cli/
+.brogue-build/
+vendor/brogue-ce/bin/
+vendor/brogue-ce/vars/
+vendor/brogue-ce/**/*.o

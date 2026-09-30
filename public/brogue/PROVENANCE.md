@@ -1,0 +1,1 @@
+Generated from modified Brogue CE src/brogue/Architect.c, src/brogue/RogueMain.c, src/brogue/Math.c and src/platform/engine_wrapper.c; upstream commit 1ba4240b7a928ddf0ffb772717bf1d433cd63804; Copyright 2012 Brian Walker; AGPL-3.0-or-later; Emscripten 4.0.10.

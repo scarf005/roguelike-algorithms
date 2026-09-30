@@ -2,18 +2,22 @@
   "fmt": {
     "semiColons": false,
     "proseWrap": "never",
-    "exclude": ["dist"]
+    "exclude": ["dist", "public/brogue/brogue.js", ".brogue-build"]
   },
   "lint": {
-    "exclude": ["dist"]
+    "exclude": ["dist", "public/brogue/brogue.js", ".brogue-build"]
   },
   "tasks": {
     "dev": "deno run -A --node-modules-dir npm:vite",
     "build": "deno run -A --node-modules-dir npm:vite build",
-    "typecheck": "deno check src/main.tsx src/**/*.test.ts",
+    "typecheck": "deno check src/vite-env.d.ts src/main.tsx src/brogue/worker.ts src/**/*.test.ts scripts/brogue/*.ts",
     "lint": "deno lint",
-    "test": "deno test",
-    "preview": "deno run -A --node-modules-dir npm:vite preview"
+    "test": "deno test --allow-read=public/brogue,src/brogue/fixtures,vendor/brogue-ce,docs/phase1-evidence",
+    "preview": "deno run -A --node-modules-dir npm:vite preview",
+    "brogue:wasm": "deno run --allow-run --allow-env=EMCC,PATH --allow-read=vendor/brogue-ce,public/brogue --allow-write=public/brogue scripts/brogue/wasm-build.ts",
+    "brogue:native": "deno run --allow-run --allow-read=vendor/brogue-ce --allow-write=vendor/brogue-ce,.brogue-build scripts/brogue/native-build.ts",
+    "brogue:fixtures": "deno run --allow-run --allow-write=src/brogue/fixtures scripts/brogue/fixtures.ts",
+    "brogue:verify-native": "deno run --allow-run --allow-read=public/brogue,docs/phase1-evidence scripts/brogue/verify-native.ts"
   },
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable", "deno.ns"],
@@ -23,6 +27,7 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.4",
+    "@std/path": "jsr:@std/path@^1.1.6",
     "solid-js": "npm:solid-js@^1.9.15",
     "vite": "npm:vite@^8.3.1",
     "vite-plugin-solid": "npm:vite-plugin-solid@^2.11.14"
