@@ -1,0 +1,104 @@
+Phase 1 experimental modifications only; not production instrumentation.
+Origin: Brogue CE src/brogue/{Architect,RogueMain,SeedCatalog}.c,
+commit 1ba4240b7a928ddf0ffb772717bf1d433cd63804 (v1.15.1).
+Original sources: Copyright 2012 Brian Walker, AGPL-3.0-or-later.
+Modified to dump terrain and selectively omit/reset state for investigation.
+Apply only to a disposable checkout. Original file notices remain intact.
+
+diff --git a/src/brogue/Architect.c b/src/brogue/Architect.c
+index 132c035..1781e3a 100644
+--- a/src/brogue/Architect.c
++++ b/src/brogue/Architect.c
+@@ -3787,8 +3787,8 @@ void initializeLevel(pos upStairsLoc) {
+                 }
+             }
+         }
+-        populateItems(upLoc);
+-        populateMonsters();
++        if (!(getenv("PHASE1_NO_ITEMS") && rogue.depthLevel < atoi(getenv("PHASE1_TARGET")))) populateItems(upLoc);
++        if (!(getenv("PHASE1_NO_MONSTERS") && rogue.depthLevel < atoi(getenv("PHASE1_TARGET")))) populateMonsters();
+     }
+ 
+     // Restore items that fell from the previous depth.
+diff --git a/src/brogue/RogueMain.c b/src/brogue/RogueMain.c
+index 93ce8b6..dafda3c 100644
+--- a/src/brogue/RogueMain.c
++++ b/src/brogue/RogueMain.c
+@@ -683,6 +683,14 @@ void startLevel(short oldLevelNumber, short stairDirection) {
+ 
+         // generate new level
+         seedRandomGenerator(levels[rogue.depthLevel - 1].levelSeed);
++        if (getenv("PHASE1_TARGET") && rogue.depthLevel == atoi(getenv("PHASE1_TARGET"))) {
++            if (getenv("PHASE1_RESET_REWARDS")) rogue.rewardRoomsGenerated = 0;
++            if (getenv("PHASE1_RESET_METERED")) {
++                memset(rogue.meteredItems, 0, gameConst->numberMeteredItems * sizeof(meteredItem));
++                for (int m = 0; m < gameConst->numberMeteredItems; m++)
++                    rogue.meteredItems[m].frequency = meteredItemsGenerationTable[m].initialFrequency;
++            }
++        }
+ 
+         // Load up next level's monsters and items, since one might have fallen from above.
+         monsters             = &levels[rogue.depthLevel-1].monsters;
+@@ -695,6 +703,8 @@ void startLevel(short oldLevelNumber, short stairDirection) {
+         int failsafe;
+         for (failsafe = 50; failsafe; failsafe--) {
+             digDungeon();
++            extern void phase1Dump(const char *stage);
++            phase1Dump("dig");
+             if (placeStairs(&upStairLocation)) {
+                 break;
+             }
+@@ -734,6 +744,8 @@ void startLevel(short oldLevelNumber, short stairDirection) {
+             }
+         }
+ 
++        extern void phase1Dump(const char *stage);
++        phase1Dump("initialized");
+         // re-seed the RNG
+         seedRandomGenerator(oldSeed);
+ 
+@@ -791,6 +803,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
+     player.loc.x = player.loc.y = 0;
+     unsigned long currentTurnNumber = rogue.absoluteTurnNumber;
+     timeAway = min(timeAway, 100);
++    if (getenv("PHASE1_NO_ENV") && rogue.depthLevel < atoi(getenv("PHASE1_TARGET"))) timeAway = 0;
+     while (timeAway--) {
+         rogue.absoluteTurnNumber = max(currentTurnNumber, timeAway) - timeAway;
+         updateEnvironment();
+diff --git a/src/brogue/SeedCatalog.c b/src/brogue/SeedCatalog.c
+index 00d2f2e..645dfba 100644
+--- a/src/brogue/SeedCatalog.c
++++ b/src/brogue/SeedCatalog.c
+@@ -251,6 +251,21 @@ static void printSeedCatalogAltars(boolean isCsvFormat) {
+     }
+ }
+ 
++// Temporary Phase 1 observation hook; never reads RNG or changes pmap.
++void phase1Dump(const char *stage) {
++    const char *out = getenv("PHASE1_OUT");
++    if (!out) return;
++    char path[1024];
++    snprintf(path, sizeof(path), "%s/%d-%s.txt", out, rogue.depthLevel, stage);
++    FILE *f = fopen(path, "w");
++    for (int y = 0; y < DROWS; y++) for (int x = 0; x < DCOLS; x++) {
++        for (int layer = 0; layer < NUMBER_TERRAIN_LAYERS; layer++)
++            fprintf(f, "%d ", pmap[x][y].layers[layer]);
++        fprintf(f, "\n");
++    }
++    fclose(f);
++}
++
+ int printSeedCatalog(uint64_t startingSeed, uint64_t numberOfSeedsToScan, unsigned int scanThroughDepth,
+                      boolean isCsvFormat, char *errorMessage) {
+     uint64_t theSeed;
+@@ -297,8 +312,9 @@ int printSeedCatalog(uint64_t startingSeed, uint64_t numberOfSeedsToScan, unsign
+         currentFilePath[0] = '\0';
+         initializeRogue(theSeed);
+         rogue.playbackOmniscience = true;
+-        for (rogue.depthLevel = 1; rogue.depthLevel <= scanThroughDepth; rogue.depthLevel++) {
++        for (rogue.depthLevel = getenv("PHASE1_DIRECT") ? scanThroughDepth : 1; rogue.depthLevel <= scanThroughDepth; rogue.depthLevel++) {
+             startLevel(rogue.depthLevel == 1 ? 1 : rogue.depthLevel - 1, 1); // descending into level n
++            phase1Dump("entry");
+             if (!isCsvFormat) {
+                 printf("    Depth %i:\n", rogue.depthLevel);
+             }
